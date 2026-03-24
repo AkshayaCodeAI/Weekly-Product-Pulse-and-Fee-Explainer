@@ -8,8 +8,18 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 
 import streamlit as st
+
+# Inject Streamlit Cloud secrets into env vars before config.py loads.
+# This ensures os.getenv() works on both local (.env) and cloud (st.secrets).
+try:
+    for key in st.secrets:
+        if key not in os.environ:
+            os.environ[key] = str(st.secrets[key])
+except Exception:
+    pass
 
 from src.config import GMAIL_RECIPIENT, GMAIL_SENDER, GROQ_API_KEY
 from src.phase1_data_ingestion.csv_loader import CSVValidationError
